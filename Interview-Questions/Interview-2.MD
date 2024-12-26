@@ -136,7 +136,7 @@ flowchart TB
 
 # 3. What are the Inline Policy and Managed Policy?
 
-# Key Differences Between Managed and Inline Policies
+#### Key Differences Between Managed and Inline Policies
 
 ---
 
@@ -190,3 +190,6 @@ flowchart TD
     end
 ```
 ---
+
+
+

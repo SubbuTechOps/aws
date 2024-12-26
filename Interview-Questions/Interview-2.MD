@@ -133,3 +133,60 @@ flowchart TB
     RT --> BW
 ```
 ---
+
+# 3. What are the Inline Policy and Managed Policy?
+
+# Key Differences Between Managed and Inline Policies
+
+---
+
+## **1. Managed Policies**
+
+- **Definition**: Standalone policies attachable to multiple users, roles, or groups.
+- **Types**:
+  - AWS-managed: Created and maintained by AWS.
+  - Customer-managed: Created and managed by you.
+- **Features**:
+  - Version-controlled for tracking updates.
+  - Reusable across multiple accounts and identities.
+
+
+## **2. Inline Policies**
+
+- **Definition**: Policies embedded directly in a single user, role, or group.
+- **Features**:
+  - One-to-one relationship with the attached identity.
+  - Cannot be shared or reused.
+  - Automatically deleted when the associated identity is deleted.
+
+## **Best Practices**
+
+1. **Use Managed Policies for Common Permissions**
+   - Apply to multiple identities to enforce consistent permissions.
+
+2. **Use Inline Policies for Unique, One-Off Permissions**
+   - Ideal for defining specific, one-time access needs.
+
+3. **Leverage AWS-Managed Policies for Service-Specific Access**
+   - Simplify permissions for common use cases with AWS-provided policies.
+
+
+```mermaid
+flowchart TD
+    subgraph "Managed Policies"
+        AWS[AWS Managed]
+        Customer[Customer Managed]
+        A1[Reusable]
+        A2[Centrally Maintained]
+        A3[Automatic Updates]
+        AWS & Customer --> A1 & A2 & A3
+    end
+
+    subgraph "Inline Policies"
+        B1[Unique to One Identity]
+        B2[Deleted with Identity]
+        B3[Manual Updates]
+        Inline --> B1 & B2 & B3
+    end
+```
+---

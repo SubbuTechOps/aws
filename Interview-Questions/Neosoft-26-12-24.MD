@@ -74,32 +74,33 @@ In that case, what are the different ways to provide access to that object?
 
 **Deleting Pod PV and PVC Upon Pod Deletion**: To ensure that Persistent Volumes (PV) and Persistent Volume Claims (PVC) are deleted when their associated pod is deleted, select the `Delete` reclaim policy for your PV configuration[6]. Different PV policies include `Retain`, `Recycle`, and `Delete`.
 
+## 14. What is the use case of Recycle Policy?
 **Use Case of Recycle Policy**: The Recycle policy allows for automatic recycling of PVs when they are released from their claims by deleting data on them and making them available for new claims again.
 
-## 14. What is the use case of Recycle Policy?
+## 15. What are the start-up probes and liveness probes?
 
 **Startup Probes vs Liveness Probes in Kubernetes**:
 
 - **Startup Probes**: Used to check if an application within a pod has started successfully; if this probe fails, Kubernetes will restart the pod.
 - **Liveness Probes**: Used to check if an application is still running; if this probe fails, Kubernetes will restart the container.
 
-## 15. What are the start-up probes and liveness probes?
+## 16. Have you implemented the Ingress controller? So why do we use this Ingress Controller?
 
 **Ingress Controller Implementation**: An Ingress Controller manages external access to services within a Kubernetes cluster, typically via HTTP/HTTPS routing rules defined in Ingress resources. It provides features like SSL termination and path-based routing.
 
-## 16. Have you implemented the Ingress controller? So why do we use this Ingress Controller?
+## 17. How were you doing the deployment part?
 
 **Deployment Methods**: Deployment can be managed through various methods such as rolling updates using `kubectl apply`, Helm charts for package management, or CI/CD tools like Jenkins or GitLab CI for automated deployments.
 
-## 17. How were you doing the deployment part?
+## 18. Which CICD tool have you worked on?
 
 **CI/CD Tools Experience**: Common CI/CD tools include Jenkins, GitLab CI/CD, CircleCI, and AWS CodePipeline, which automate testing and deployment processes across environments.
 
-## 18. How can you roll back to a previous version for the deployment in Jenkins Pipeline?
+## 19. How can you roll back to a previous version for the deployment in Jenkins Pipeline?
 
 **Rollback in Jenkins Pipeline**: To roll back to a previous version in Jenkins Pipeline, you can use the `rollback` command within your deployment scripts or revert changes in your version control system and trigger redeployment from there.
 
-## 19. What is the command you use for this rollback using Helm Charts?
+## 20. What is the command you use for this rollback using Helm Charts?
 
 **Helm Chart Rollback Command**: The command used for rollback using Helm Charts is:
 
@@ -109,7 +110,7 @@ helm rollback <release-name> <revision>
 
 This command reverts your release back to a specified revision number.
 
-## 20. How did you do the Monitoring Part?
+## 21. How did you do the Monitoring Part?
 
 **Monitoring Implementation**: Monitoring can be implemented using tools like Prometheus for metrics collection and Grafana for visualization of those metrics across applications and infrastructure components.
 

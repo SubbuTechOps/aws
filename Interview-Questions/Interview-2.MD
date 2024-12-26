@@ -190,6 +190,46 @@ flowchart TD
     end
 ```
 ---
+##### 1. Startup Probe:
+- When: Application startup only
+- Purpose: Prevent premature health checks
+- Action: Delays other probes until success
+##### 2. Readiness Probe:
+- When: Throughout pod lifecycle
+- Purpose: Traffic management
+- Action: Adds/removes from service endpoint
+##### 3.Liveness Probe:
+- When: Throughout pod lifecycle
+- Purpose: Detect application failures
+- Action: Restarts container if failed
 
-
-
+```mermaid
+flowchart TB
+    Start[Container Starts] --> SP
+    
+    subgraph SP[Startup Probe]
+        SP1[Runs First]
+        SP2[Only During Initial Startup]
+        SP3[Blocks Other Probes]
+        SP4[Action: Delays Other Probes]
+    end
+    
+    SP --> RP
+    
+    subgraph RP[Readiness Probe]
+        RP1[Runs Second]
+        RP2[Continuous Check]
+        RP3[Traffic Management]
+        RP4[Action: Add/Remove from Service]
+    end
+    
+    RP --> LP
+    
+    subgraph LP[Liveness Probe]
+        LP1[Runs Third]
+        LP2[Continuous Health Check]
+        LP3[Application Health]
+        LP4[Action: Restart Container]
+    end
+```
+---

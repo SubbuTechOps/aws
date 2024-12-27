@@ -511,8 +511,30 @@ module "prod_iam" {
 variables {
   environment = "test"
   pgp_key     = "test-key.gpg"
+  common_tags = {
+    Environment = "test"
+    ManagedBy   = "terraform"
+    Purpose     = "testing"
+  }
+  global_admin_users = ["test-admin"]
+  environment_admin_users = ["test-env-admin"]
+  service_team_users = {
+    "Network" = ["test-network-admin"]
+    "Security" = ["test-security-admin"]
+    "Database" = ["test-db-admin"]
+  }
+  application_team_users = {
+    "Developers" = ["test-dev-1", "test-dev-2"]
+    "ReadOnly" = ["test-readonly-1"]
+    "PowerUsers" = ["test-power-1"]
+  }
+  automated_service_users = {
+    "CI-CD" = ["test-jenkins"]
+    "Monitoring" = ["test-prometheus"]
+  }
 }
 
+# Test User Creation
 run "verify_user_creation" {
   command = plan
 
@@ -520,8 +542,19 @@ run "verify_user_creation" {
     condition     = length(module.test_iam.user_arns) > 0
     error_message = "No users were created"
   }
+
+  assert {
+    condition     = contains(keys(module.test_iam.user_arns), "test-admin")
+    error_message = "Global admin user was not created"
+  }
+
+  assert {
+    condition     = contains(keys(module.test_iam.user_arns), "test-env-admin")
+    error_message = "Environment admin user was not created"
+  }
 }
 
+# Test Group Creation
 run "verify_group_creation" {
   command = plan
 
@@ -529,11 +562,152 @@ run "verify_group_creation" {
     condition     = length(module.test_iam.group_arns) > 0
     error_message = "No groups were created"
   }
+
+  assert {
+    condition     = contains(values(module.test_iam.group_arns), "arn:aws:iam::*:group/groups/global-admins/Global-Admins")
+    error_message = "Global admin group was not created correctly"
+  }
 }
 
+# Test Service Team Groups
+run "verify_service_team_groups" {
+  command = plan
+
+  assert {
+    condition = contains(keys(module.test_iam.group_arns), "service_Network")
+    error_message = "Network admin group was not created"
+  }
+
+  assert {
+    condition = contains(keys(module.test_iam.group_arns), "service_Security")
+    error_message = "Security admin group was not created"
+  }
+}
+
+# Test Application Team Groups
+run "verify_app_team_groups" {
+  command = plan
+
+  assert {
+    condition = contains(keys(module.test_iam.group_arns), "app_Developers")
+    error_message = "Developers group was not created"
+  }
+
+  assert {
+    condition = contains(keys(module.test_iam.group_arns), "app_ReadOnly")
+    error_message = "ReadOnly group was not created"
+  }
+}
+
+# Test Password Generation
 run "verify_password_generation" {
   command = plan
 
   assert {
     condition     = length(module.test_iam.encrypted_passwords) > 0
-    error
+    error_message = "No passwords were generated for human users"
+  }
+
+  assert {
+    condition     = !contains(keys(module.test_iam.encrypted_passwords), "test-jenkins")
+    error_message = "Password was incorrectly generated for service account"
+  }
+}
+
+# Test Resource Paths
+run "verify_resource_paths" {
+  command = plan
+
+  assert {
+    condition = can(regex("^/global-admins/", data.aws_iam_user.test_admin.path))
+    error_message = "Global admin user path is incorrect"
+  }
+
+  assert {
+    condition = can(regex("^/groups/service-teams/test/", data.aws_iam_group.test_network.path))
+    error_message = "Service team group path is incorrect"
+  }
+}
+
+# Test Tags
+run "verify_resource_tags" {
+  command = plan
+
+  assert {
+    condition = all(
+      aws_iam_user.users["test-admin"].tags["Environment"] == "test",
+      aws_iam_user.users["test-admin"].tags["ManagedBy"] == "terraform"
+    )
+    error_message = "Required tags are missing or incorrect"
+  }
+}
+
+# Test Policy Attachments
+run "verify_policy_attachments" {
+  command = plan
+
+  assert {
+    condition = contains(
+      aws_iam_group_policy_attachment.global_admin_policy[*].policy_arn,
+      "arn:aws:iam::aws:policy/AdministratorAccess"
+    )
+    error_message = "Administrator policy not attached to global admin group"
+  }
+}
+
+# Test Service Account Configuration
+run "verify_service_accounts" {
+  command = plan
+
+  assert {
+    condition = !can(aws_iam_user_login_profile.profiles["test-jenkins"])
+    error_message = "Service account incorrectly configured with login profile"
+  }
+
+  assert {
+    condition = can(regex("^/service-accounts/test/", data.aws_iam_user.test_jenkins.path))
+    error_message = "Service account path is incorrect"
+  }
+}
+
+# Test Environment Separation
+run "verify_environment_separation" {
+  command = plan
+
+  assert {
+    condition = all(
+      contains(split("/", data.aws_iam_group.test_env_admin.path), "test"),
+      !contains(split("/", data.aws_iam_group.test_env_admin.path), "prod")
+    )
+    error_message = "Environment separation not properly enforced"
+  }
+}
+
+# Test Group Membership
+run "verify_group_membership" {
+  command = plan
+
+  assert {
+    condition = contains(
+      aws_iam_user_group_membership.global_admins["test-admin"].groups,
+      aws_iam_group.global_admins.name
+    )
+    error_message = "Global admin not properly assigned to group"
+  }
+}
+
+# Test Password Policy
+run "verify_password_policy" {
+  command = plan
+
+  assert {
+    condition = aws_iam_user_login_profile.profiles["test-admin"].password_reset_required
+    error_message = "Password reset not required for new users"
+  }
+
+  assert {
+    condition = aws_iam_user_login_profile.profiles["test-admin"].password_length >= 20
+    error_message = "Password length requirement not met"
+  }
+}
+```

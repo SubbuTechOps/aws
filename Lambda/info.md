@@ -93,3 +93,10 @@ flowchart TD
 - CloudWatch Logs: Function logs
 - CloudWatch Metrics: Performance metrics
 - X-Ray Tracing: Distributed tracing
+
+## Limitations of AWS Lambda
+- Execution Timeout – Max 15 minutes per function execution.
+- Memory Limits – 128 MB to 10 GB per function.
+- Cold Start Delays – Initial execution may have latency.
+- Limited Storage – 512 MB of temporary storage (/tmp directory).
+- Concurrency Limits – Default 1000 concurrent executions (can be increased).

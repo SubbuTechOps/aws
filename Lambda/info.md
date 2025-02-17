@@ -64,3 +64,35 @@ flowchart TD
     style Runtime fill:#fff3e0,stroke:#e65100
     style Monitoring fill:#e8f5e9,stroke:#1b5e20
 ```
+
+## Let me explain each phase of the Lambda execution flow:
+
+**1. Trigger Sources:**
+    - API Gateway: HTTP/REST API requests
+    - S3 Events: File uploads/deletions
+    - EventBridge: Scheduled or event-based triggers
+    - SQS/SNS: Message-based triggers
+    - DynamoDB Streams: Database changes
+
+    
+**2. Cold Start Phase:**
+    - Container Initialization: AWS prepares a new container
+    - Runtime Bootstrap: Sets up the runtime environment
+    - Function Handler: Entry point preparation
+
+    
+**3. Runtime Process:**
+    - Function Code Execution: Your actual code runs
+    - Execution Loop: Processes until completion
+    - Response Return: Sends back results
+
+
+**4. Container Management:**
+    - Container Reuse: Keeps warm for subsequent invocations
+    - Container Termination: Cleanup if not reused
+
+
+**5. Monitoring & Logging:**
+    - CloudWatch Logs: Function logs
+    - CloudWatch Metrics: Performance metrics
+    - X-Ray Tracing: Distributed tracing

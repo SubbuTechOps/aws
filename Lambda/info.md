@@ -95,7 +95,9 @@ flowchart TD
 - X-Ray Tracing: Distributed tracing
 
 ## Limitations of AWS Lambda
-- Execution Timeout – Max 15 minutes per function execution.
+- Execution Timeout 
+    - Minimum Timeout: 1 ms (0.001 seconds)
+   -  Maximum Timeout: 900 seconds (15 minutes)
 - Memory Limits – 128 MB to 10 GB per function.
 - Cold Start Delays – Initial execution may have latency.
 - Limited Storage – 512 MB of temporary storage (/tmp directory).
